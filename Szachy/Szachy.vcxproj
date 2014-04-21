@@ -46,6 +46,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\Users\Jakub\Documents\Visual Studio 2013\Projects\Szachy\Szachy\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -53,6 +54,9 @@
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -69,17 +73,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Bishop.cpp" />
-    <ClCompile Include="Board.cpp" />
-    <ClCompile Include="DynamicObject.cpp" />
-    <ClCompile Include="King.cpp" />
-    <ClCompile Include="Knight.cpp" />
+    <ClCompile Include="Bishop.h" />
+    <ClCompile Include="Board.h" />
+    <ClCompile Include="DynamicObject.h" />
+    <ClCompile Include="King.h" />
+    <ClCompile Include="Knight.h" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Pawn.cpp" />
-    <ClCompile Include="Place.cpp" />
-    <ClCompile Include="Queen.cpp" />
-    <ClCompile Include="Rook.cpp" />
-    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Overlaps.cpp" />
+    <ClCompile Include="Pawn.h" />
+    <ClCompile Include="Place.h" />
+    <ClCompile Include="Queen.h" />
+    <ClCompile Include="Rook.h" />
+    <ClCompile Include="Texture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

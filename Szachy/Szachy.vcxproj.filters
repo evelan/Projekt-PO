@@ -21,35 +21,43 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Board.cpp">
+    <ClCompile Include="Bishop.h">
+      <Filter>Source Files\Figure</Filter>
+    </ClCompile>
+    <ClCompile Include="King.h">
+      <Filter>Source Files\Figure</Filter>
+    </ClCompile>
+    <ClCompile Include="Knight.h">
+      <Filter>Source Files\Figure</Filter>
+    </ClCompile>
+    <ClCompile Include="Pawn.h">
+      <Filter>Source Files\Figure</Filter>
+    </ClCompile>
+    <ClCompile Include="Queen.h">
+      <Filter>Source Files\Figure</Filter>
+    </ClCompile>
+    <ClCompile Include="Rook.h">
+      <Filter>Source Files\Figure</Filter>
+    </ClCompile>
+    <ClCompile Include="Board.h">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DynamicObject.cpp">
+    <ClCompile Include="DynamicObject.h">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="King.cpp">
-      <Filter>Source Files\Figure</Filter>
-    </ClCompile>
-    <ClCompile Include="Queen.cpp">
-      <Filter>Source Files\Figure</Filter>
-    </ClCompile>
-    <ClCompile Include="Rook.cpp">
-      <Filter>Source Files\Figure</Filter>
-    </ClCompile>
-    <ClCompile Include="Bishop.cpp">
-      <Filter>Source Files\Figure</Filter>
-    </ClCompile>
-    <ClCompile Include="Knight.cpp">
-      <Filter>Source Files\Figure</Filter>
-    </ClCompile>
-    <ClCompile Include="Pawn.cpp">
-      <Filter>Source Files\Figure</Filter>
-    </ClCompile>
-    <ClCompile Include="Place.cpp">
+    <ClCompile Include="Place.h">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
+    <ClCompile Include="Texture.h">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Overlaps.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

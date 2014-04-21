@@ -1,6 +1,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
-#include "Texture.cpp"
+#include "Texture.h"
 
 enum STATE_ENUM
 {
@@ -9,18 +9,11 @@ enum STATE_ENUM
 	ENEMY = 2
 };
 
-enum COLOR_ENUM
-{
-	WHITE = 0,
-	BLACK = 1
-};
-
 class Place : public Texture
 {
 protected:
 	int TILE_SIZE = 64;
 	STATE_ENUM state = FREE;
-	COLOR_ENUM color = WHITE;
 
 public:
 	Place(){}
@@ -29,11 +22,9 @@ public:
 	{
 		if (white) {
 			texture = IMG_LoadTexture(ren, "white_place.png");
-			color = WHITE;
 		}
 		else {
 			texture = IMG_LoadTexture(ren, "black_place.png");
-			color = BLACK;
 		}
 
 		rectangle.x = x;
