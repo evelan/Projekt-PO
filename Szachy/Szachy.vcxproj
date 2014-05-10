@@ -44,13 +44,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Jakub\Documents\Visual Studio 2013\Projects\Szachy\Szachy\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Evelan\Documents\Visual Studio 2013\Projects\Szachy\Szachy\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Jakub\Documents\Visual Studio 2013\Projects\Szachy\Szachy\SDL2\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Evelan\Documents\Visual Studio 2013\Projects\Szachy\Szachy\SDL2\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -73,13 +73,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Bishop.h" />
     <ClCompile Include="Board.h" />
     <ClCompile Include="DynamicObject.h" />
     <ClCompile Include="King.h" />
     <ClCompile Include="Knight.h" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Overlaps.cpp" />
     <ClCompile Include="Pawn.h" />
     <ClCompile Include="Place.h" />
     <ClCompile Include="Queen.h" />
@@ -87,7 +85,7 @@
     <ClCompile Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.h" />
+    <ClInclude Include="Bishop.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

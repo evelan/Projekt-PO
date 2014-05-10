@@ -1,18 +1,25 @@
+#ifndef _Board_H_
+#define _Board_H_
 #include <SDL.h>
 #include <SDL_image.h>
 #include "Place.h"
 
 
-class Board
+class Board : public Place
+
 {
 private:
-	Place boardMap[8][8];
-	int offset_x = (800 - (64 * 8)) / 2;
-	int offset_y = (600 - (64 * 8)) / 2;
 	bool white;
 	int k;
 
+protected:
+	Place boardMap[8][8];
+	int boardStartX = ((800 - 8 * TILE_SIZE) / 2); //gdzie zaczyna siê plansza do gry
+	int boardStartY = ((600 - 8 * TILE_SIZE) / 2);
+
 public:
+	Board(){};
+
 	Board(SDL_Renderer *renderer)
 	{
 		white = false;
@@ -21,23 +28,20 @@ public:
 		{
 			for (int j = 0; j < 8; j++)
 			{
-				white = (k++ % 2) ? true : false; // na zmianê
+				white = (k++ % 2) ? true : false; // na zmianê true i false
 				if (j == 7)	k++; // jak ostatni "kafelek to dodajemy +1 ¿eby kolejny by³ tego samego koloru co poprzedni
-				boardMap[j][i].loadTexture(renderer, (offset_x + (64 * j)), (offset_y + (64 * i)), white);
+				
+				boardMap[j][i].loadTexture(renderer, (white) ? "white_place.png" : "black_place.png");
+				boardMap[j][i].setPosition((boardStartX + (TILE_SIZE * j)), (boardStartY + (TILE_SIZE * i)));
 			}
 		}
 	}
 
-	void render(SDL_Renderer *renderer)
+	void renderBoard(SDL_Renderer *renderer)
 	{
 		for (int i = 0; i < 8; i++)
 		for (int j = 0; j < 8; j++)
 			boardMap[j][i].render(renderer);
 	}
-
-	~Board()
-	{
-
-	}
-
 };
+#endif _Board_H_

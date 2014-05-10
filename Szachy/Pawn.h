@@ -2,6 +2,12 @@
 
 class Pawn : public DynamicObject
 {
+private:
+	static int defX;
+	static int defY;
+	int x;
+	int y;
+
 public:
 	Pawn() { setSize(TILE_SIZE); }
 
@@ -9,8 +15,27 @@ public:
 	{
 		int boardStartX = ((800 - 8 * TILE_SIZE) / 2);
 		int boardStartY = ((600 - 8 * TILE_SIZE) / 2);
-		loadTexture(ren, ((value == WHITE) ? "WPawn.png" : "BPawn.png")); // jeœli prawda (WHITE) to ³aduje bia³ego pionka
+		loadTexture(ren, ((value == WHITE) ? "WPawn.png" : "BPawn.png")); // jeœli prawda (WHITE) to ³aduje texture bia³ego pionka
+		
+		
 		setPosition(boardStartX + TILE_SIZE * pos_x, boardStartY + TILE_SIZE * pos_y);
+		
+		
 		color = value;
+	}
+
+	void move()
+	{
+		setPosition(getX(), (getColor() == WHITE) ? getY() - TILE_SIZE : getY() + TILE_SIZE);
+	}
+
+	void focus()
+	{
+
+	}
+
+	void attack()
+	{
+
 	}
 };

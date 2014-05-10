@@ -21,9 +21,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Bishop.h">
-      <Filter>Source Files\Figure</Filter>
-    </ClCompile>
     <ClCompile Include="King.h">
       <Filter>Source Files\Figure</Filter>
     </ClCompile>
@@ -51,13 +48,10 @@
     <ClCompile Include="Texture.h">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Overlaps.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Bishop.h">
+      <Filter>Source Files\Figure</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

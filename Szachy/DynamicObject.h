@@ -28,11 +28,13 @@ protected:
 	bool live;
 	COLOR_ENUM color;
 	FIGURE_ENUM figure;
-	const int TILE_SIZE = 64;
 	int unsigned id;
+	const int TILE_SIZE = 64;
 
 public:
-	
+
+	DynamicObject(){};
+
 	bool isAlive()
 	{
 		return live;
@@ -47,5 +49,16 @@ public:
 	{
 		return color;
 	}
+	/*
+	void set(SDL_Renderer *ren, int pos_x, int pos_y, COLOR_ENUM color, FIGURE_ENUM figure)
+	{
+		int boardStartX = ((800 - 8 * TILE_SIZE) / 2);
+		int boardStartY = ((600 - 8 * TILE_SIZE) / 2);
+		loadTexture(ren, ((color == WHITE) ? "WPawn.png" : "BPawn.png")); // jeœli prawda (WHITE) to ³aduje bia³ego pionka
+		setPosition(boardStartX + TILE_SIZE * pos_x, boardStartY + TILE_SIZE * pos_y);
+		this->color = color;
+		this->figure = figure;
+	}
+	*/
 };
 #endif _DynamicObject_H_

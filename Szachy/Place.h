@@ -1,3 +1,5 @@
+#ifndef _Place_H_
+#define _Place_H_
 #include <SDL.h>
 #include <SDL_image.h>
 #include "Texture.h"
@@ -5,33 +7,27 @@
 enum STATE_ENUM
 {
 	FREE = 0,
-	FRIEND = 1,
-	ENEMY = 2
+	BUSY = 1
 };
 
 class Place : public Texture
 {
 protected:
-	int TILE_SIZE = 64;
+	const int TILE_SIZE = 64;
 	STATE_ENUM state = FREE;
 
 public:
-	Place(){}
+	Place(){ setSize(TILE_SIZE); };
 
-	SDL_Texture *loadTexture(SDL_Renderer *ren, int x, int y, bool white)
+	STATE_ENUM getState()
 	{
-		if (white) {
-			texture = IMG_LoadTexture(ren, "white_place.png");
-		}
-		else {
-			texture = IMG_LoadTexture(ren, "black_place.png");
-		}
+		return state;
+	}
 
-		rectangle.x = x;
-		rectangle.y = y;
-		rectangle.w = TILE_SIZE;
-		rectangle.h = TILE_SIZE;
-		return texture;
+	void setState(STATE_ENUM state)
+	{
+		this->state = state;
 	}
 
 };
+#endif _Place_H_

@@ -11,6 +11,7 @@
 using namespace std;
 
 int main(int argc, char **argv) {
+	//Game game();
 
 	const int SCREEN_WIDTH = 800;
 	const int SCREEN_HEIGHT = 600;
@@ -33,6 +34,7 @@ int main(int argc, char **argv) {
 	King king[2];
 	Queen queen[2];
 
+	/* BIA£E NA DOLE */
 	for (int i = 0; i < 16; i++)
 	{
 		pawn[i].set(renderer, i, 1, BLACK);
@@ -66,12 +68,13 @@ int main(int argc, char **argv) {
 	queen[0].set(renderer, 4, 0, BLACK);
 	queen[1].set(renderer, 4, 7, WHITE);
 
+	int a = 0;
 	while ((SDL_PollEvent(&mainEvent) != 0) || (mainEvent.type != SDL_QUIT))
 	{
 		SDL_RenderClear(renderer);
 
 		background.render(renderer);
-		board.render(renderer);
+		board.renderBoard(renderer);
 
 		for (int i = 0; i < 16; i++)
 			pawn[i].render(renderer);
@@ -90,8 +93,16 @@ int main(int argc, char **argv) {
 		}
 
 		SDL_RenderPresent(renderer);
+
+		/* RUCH GRACZA */
+		if (mainEvent.type == SDL_MOUSEBUTTONDOWN && mainEvent.button.button == SDL_BUTTON_LEFT)
+		{
+			int x = mainEvent.motion.x;
+			int y = mainEvent.motion.y;
+
+		}
+
 	}
 	SDL_Quit();
-
 	return 0;
 }
