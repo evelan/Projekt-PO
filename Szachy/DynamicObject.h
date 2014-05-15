@@ -1,10 +1,8 @@
 #ifndef _DynamicObject_H_
 #define _DynamicObject_H_
 #include <SDL.h>
-#include <iostream>
-#include "Texture.h"
-
-using namespace std;
+#include <SDL_image.h>
+#include "Board.h"
 
 enum COLOR_ENUM
 {
@@ -22,43 +20,125 @@ enum FIGURE_ENUM
 	KING = 5
 };
 
-class DynamicObject : public Texture
+/* KLASA BAZOWA PIONKÓW */
+
+class DynamicObject 
 {
-protected:
+private:
+	SDL_Renderer *renderer;
+	SDL_Texture *texture;
+	SDL_Rect rectangle;
+	COLOR_ENUM color; //ustawiany tylko raz wiêc prywatny
+	const int TILE_SIZE = 64; // wielkoœæ pionka w pixelach
 	bool live;
-	COLOR_ENUM color;
-	FIGURE_ENUM figure;
-	int unsigned id;
-	const int TILE_SIZE = 64;
+	int x, y; // pozycja pionka w jednostakch na planszy
+
+protected:
+	FIGURE_ENUM figure; //mo¿e siê zmieniæ
+	Board *boardPtr; //wskaŸnik na planszê
 
 public:
-
-	DynamicObject(){};
+	DynamicObject()
+	{
+		live = true;
+	};
 
 	bool isAlive()
 	{
 		return live;
 	}
 
-	FIGURE_ENUM getFigureType()
+	void kill()
 	{
-		return figure;
+		live = false;
+		boardPtr->resetAll();
+	}
+
+	void set(SDL_Renderer *renderer, int x, int y, COLOR_ENUM color, Board &board)
+	{
+		this->renderer = renderer;
+		
+		switch (figure) //która textura ma byæ za³adowana
+		{
+		case PAWN:
+			texture = IMG_LoadTexture(renderer, ((color == WHITE) ? "WPawn.png" : "BPawn.png"));
+			break;
+
+		case ROOK:
+			texture = IMG_LoadTexture(renderer, ((color == WHITE) ? "WRook.png" : "BRook.png"));
+			break;
+			
+		case KING:
+			texture = IMG_LoadTexture(renderer, ((color == WHITE) ? "WKing.png" : "BKing.png"));
+			break;
+
+		case QUEEN:
+			texture = IMG_LoadTexture(renderer, ((color == WHITE) ? "WQueen.png" : "BQueen.png"));
+			break;
+
+		case BISHOP:
+			texture = IMG_LoadTexture(renderer, ((color == WHITE) ? "WBishop.png" : "BBishop.png"));
+			break;
+			
+		case KNIGHT:
+			texture = IMG_LoadTexture(renderer, ((color == WHITE) ? "WKnight.png" : "BKnight.png"));
+			break;
+
+		}
+
+
+		setPosition(x, y);
+		board.setBusy(x, y, (getColor() == WHITE) ? WHITE_FIGURE : BLACK_FIGURE);
+		
+		this->color = color;
+		boardPtr = &board;
+
+		rectangle.w = TILE_SIZE;
+		rectangle.h = TILE_SIZE;
+	}
+
+	void setPosition(int x, int y)
+	{
+		/* POZYCJA NA PLANSZY [0, 7] */
+		this->x = x;
+		this->y = y;
+
+		/* POZYCJA W PIXELACH - NA EKRANIE */
+		int boardStartX = ((800 - 8 * TILE_SIZE) / 2);
+		int boardStartY = ((600 - 8 * TILE_SIZE) / 2);
+
+		rectangle.x = (x * TILE_SIZE) + boardStartX;
+		rectangle.y = (y * TILE_SIZE) + boardStartY;
+
+		/* INFORMACJA O TYM ¯E POLE JEST ZAJÊTE */
+	}
+
+	void render()
+	{
+		if (live)
+			SDL_RenderCopy(renderer, texture, NULL, &rectangle);
+	}
+
+	int getX() // pozycja na planszy
+	{
+		return x;
+	}
+
+	int getY() // pozycja na planszy
+	{
+		return y;
 	}
 
 	COLOR_ENUM getColor()
 	{
 		return color;
 	}
-	/*
-	void set(SDL_Renderer *ren, int pos_x, int pos_y, COLOR_ENUM color, FIGURE_ENUM figure)
-	{
-		int boardStartX = ((800 - 8 * TILE_SIZE) / 2);
-		int boardStartY = ((600 - 8 * TILE_SIZE) / 2);
-		loadTexture(ren, ((color == WHITE) ? "WPawn.png" : "BPawn.png")); // jeœli prawda (WHITE) to ³aduje bia³ego pionka
-		setPosition(boardStartX + TILE_SIZE * pos_x, boardStartY + TILE_SIZE * pos_y);
-		this->color = color;
-		this->figure = figure;
-	}
-	*/
+
+	protected:
+		bool safeMove()
+		{
+			return (x - 1 < 0 && x + 1 > 7 && y - 1 < 0 && y + 1 > 7) ? true : false;
+		}
+
 };
 #endif _DynamicObject_H_

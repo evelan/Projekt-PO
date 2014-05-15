@@ -2,32 +2,78 @@
 #define _Place_H_
 #include <SDL.h>
 #include <SDL_image.h>
-#include "Texture.h"
+#include <string>
+#include <iostream>
 
-enum STATE_ENUM
+using namespace std;
+
+enum ENUM_STATE
 {
-	FREE = 0,
-	BUSY = 1
+	WHITE_FIGURE = 0,
+	BLACK_FIGURE = 1,
+	FREE = 2
 };
+/* POJEDYÑCZE POLE NA SZACHOWNICY */
 
-class Place : public Texture
+class Place
 {
-protected:
-	const int TILE_SIZE = 64;
-	STATE_ENUM state = FREE;
+private:
+	SDL_Texture *texture;
+	SDL_Texture *green, *red;
+	SDL_Rect rectangle;
+	bool isAllow;
+	ENUM_STATE state;
 
 public:
-	Place(){ setSize(TILE_SIZE); };
+	static const int TILE_SIZE = 64; //rozmiar jednej "kratki" planszy w pikselach
+	Place()
+	{
+		rectangle.w = TILE_SIZE;
+		rectangle.h = TILE_SIZE;
+		isAllow = false;
+		state = FREE;
+	};
 
-	STATE_ENUM getState()
+	void setup(SDL_Renderer *renderer, const string &file, int xPix, int yPix)
+	{
+		texture = IMG_LoadTexture(renderer, file.c_str());
+		green = IMG_LoadTexture(renderer, "ok.png");
+		red = IMG_LoadTexture(renderer, "not_ok.png");
+
+		rectangle.x = xPix;
+		rectangle.y = yPix;
+	}
+
+	void render(SDL_Renderer *renderer)
+	{
+		SDL_RenderCopy(renderer, texture, NULL, &rectangle);
+		
+		if (state == FREE && isAllow)
+			SDL_RenderCopy(renderer, green, NULL, &rectangle);
+
+		//if (state == BUSY)
+		//	SDL_RenderCopy(renderer, red, NULL, &rectangle);
+	}
+	
+	void allow()
+	{
+		isAllow = true;
+	}
+
+	void reset()
+	{
+		isAllow = false;
+	}
+	
+
+	ENUM_STATE getState()
 	{
 		return state;
 	}
 
-	void setState(STATE_ENUM state)
+	void setState(ENUM_STATE state)
 	{
 		this->state = state;
 	}
-
 };
 #endif _Place_H_

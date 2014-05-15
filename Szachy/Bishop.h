@@ -3,15 +3,20 @@
 class Bishop : public DynamicObject
 {
 public:
-	Bishop(){ setSize(TILE_SIZE); }
-
-	void set(SDL_Renderer *ren, int pos_x, int pos_y, COLOR_ENUM value)
+	Bishop()
 	{
-		int boardStartX = ((800 - 8 * TILE_SIZE) / 2);
-		int boardStartY = ((600 - 8 * TILE_SIZE) / 2);
-		loadTexture(ren, ((value == WHITE) ? "WBishop.png" : "BBishop.png")); // jeœli prawda (WHITE) to ³aduje bia³ego pionka
-		setPosition(boardStartX + TILE_SIZE * pos_x, boardStartY + TILE_SIZE * pos_y);
+		figure = BISHOP;
+	}
 
-		color = value;
+	void move()
+	{
+		//setPosition(getX(), (getColor() == WHITE) ? getY() - 1 : getY() + 1);
+	}
+
+	void focus(SDL_Renderer *renderer, Board &board)
+	{
+		/* JEDNO W POLE PRZÓD USTAWI NA ZIELONE/CZERWONE */
+		for (int i = 0; i < 7; i++)
+			board.setPlaceAllow(getX() + i, getY() + i);
 	}
 };

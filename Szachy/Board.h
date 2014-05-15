@@ -2,26 +2,29 @@
 #define _Board_H_
 #include <SDL.h>
 #include <SDL_image.h>
+#include <iostream>
 #include "Place.h"
 
+using namespace std;
 
-class Board : public Place
-
+class Board
 {
 private:
 	bool white;
 	int k;
-
-protected:
-	Place boardMap[8][8];
-	int boardStartX = ((800 - 8 * TILE_SIZE) / 2); //gdzie zaczyna siê plansza do gry
-	int boardStartY = ((600 - 8 * TILE_SIZE) / 2);
+	const int SCREEN_WIDTH = 800;
+	const int SCREEN_HEIGHT = 600;
+	int boardStartX = ((SCREEN_WIDTH - 8 * Place::TILE_SIZE) / 2); //gdzie zaczyna siê plansza do gry
+	int boardStartY = ((SCREEN_HEIGHT - 8 * Place::TILE_SIZE) / 2);
+	SDL_Renderer *renderer;
 
 public:
+	Place place[8][8];
 	Board(){};
 
-	Board(SDL_Renderer *renderer)
+	void setup(SDL_Renderer *renderer)
 	{
+		this->renderer = renderer;
 		white = false;
 		k = 0;
 		for (int i = 0; i < 8; i++)
@@ -30,18 +33,48 @@ public:
 			{
 				white = (k++ % 2) ? true : false; // na zmianê true i false
 				if (j == 7)	k++; // jak ostatni "kafelek to dodajemy +1 ¿eby kolejny by³ tego samego koloru co poprzedni
-				
-				boardMap[j][i].loadTexture(renderer, (white) ? "white_place.png" : "black_place.png");
-				boardMap[j][i].setPosition((boardStartX + (TILE_SIZE * j)), (boardStartY + (TILE_SIZE * i)));
+				place[j][i].setup(renderer, (white) ? "white_place.png" : "black_place.png", (boardStartX + (Place::TILE_SIZE * j)), (boardStartY + (Place::TILE_SIZE * i)));
 			}
 		}
 	}
 
-	void renderBoard(SDL_Renderer *renderer)
+	void renderBoard()
 	{
 		for (int i = 0; i < 8; i++)
 		for (int j = 0; j < 8; j++)
-			boardMap[j][i].render(renderer);
+			place[j][i].render(renderer);
+	}
+
+	void setBusy(int x, int y, ENUM_STATE state)
+	{
+		place[x][y].setState(state);
+	}
+
+	void setFree(int x, int y)
+	{
+		place[x][y].setState(FREE);
+	}
+
+	void setPlaceAllow(int x, int y)
+	{
+		place[x][y].allow();
+	}
+
+	void resetAll()
+	{
+		for (int i = 0; i < 8; i++)
+		for (int j = 0; j < 8; j++)
+			place[j][i].reset();
+	}
+
+	bool isFree(int x, int y)
+	{
+		return (place[x][y].getState() == FREE) ? true : false;
+	}
+
+	bool isEnemy(int x, int y)
+	{
+		return (place[x][y].getState() == FREE) ? true : false;
 	}
 };
 #endif _Board_H_
