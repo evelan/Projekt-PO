@@ -3,35 +3,47 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <string>
-#include <iostream>
 
 using namespace std;
 
-enum ENUM_STATE
+enum STATE
 {
-	WHITE_FIGURE = 0,
-	BLACK_FIGURE = 1,
-	FREE = 2
+	FREE = 0,
+	BUSY = 1
 };
+
+enum COLOR
+{
+	WHITE = 0,
+	BLACK = 1,
+	NONE = 2
+};
+
+
 /* POJEDYÑCZE POLE NA SZACHOWNICY */
 
 class Place
 {
 private:
-	SDL_Texture *texture;
 	SDL_Texture *green, *red;
+	SDL_Texture *texture;
 	SDL_Rect rectangle;
-	bool isAllow;
-	ENUM_STATE state;
+	STATE state;
+	COLOR color;
+
 
 public:
 	static const int TILE_SIZE = 64; //rozmiar jednej "kratki" planszy w pikselach
+	bool allowedPlace; // pole dozwolone dla ruchu
+	bool enemyHere; // pole na którym jest przeciwnik
+
 	Place()
 	{
 		rectangle.w = TILE_SIZE;
 		rectangle.h = TILE_SIZE;
-		isAllow = false;
-		state = FREE;
+		allowedPlace = false;
+		state = FREE; //standardowo wszystkie pola s¹ wolne
+		color = NONE; 
 	};
 
 	void setup(SDL_Renderer *renderer, const string &file, int xPix, int yPix)
@@ -44,36 +56,41 @@ public:
 		rectangle.y = yPix;
 	}
 
-	void render(SDL_Renderer *renderer)
+	void render(SDL_Renderer *renderer) // renderuje pole na wedle ustawieñ
 	{
-		SDL_RenderCopy(renderer, texture, NULL, &rectangle);
+		SDL_RenderCopy(renderer, texture, NULL, &rectangle); // czarne/bia³e jest renderowane zawsze
 		
-		if (state == FREE && isAllow)
+		if (state == FREE && allowedPlace) //zielona nak³adka jeœli dostêpne dla ruchu i wolne
 			SDL_RenderCopy(renderer, green, NULL, &rectangle);
 
-		//if (state == BUSY)
-		//	SDL_RenderCopy(renderer, red, NULL, &rectangle);
-	}
-	
-	void allow()
-	{
-		isAllow = true;
+		if (state == BUSY && enemyHere) //czerwona nak³adka jeœli jest na nim przeciwnik i jest zajête
+			SDL_RenderCopy(renderer, red, NULL, &rectangle);
 	}
 
-	void reset()
+	void reset() // resetuje ustawienie pola
 	{
-		isAllow = false;
+		allowedPlace = false;
+		enemyHere = false;
 	}
-	
 
-	ENUM_STATE getState()
+	STATE getState()
 	{
 		return state;
 	}
 
-	void setState(ENUM_STATE state)
+	COLOR getColor()
+	{
+		return color;
+	}
+
+	void setState(STATE state)
 	{
 		this->state = state;
+	}
+
+	void setColor(COLOR color)
+	{
+		this->color = color;
 	}
 };
 #endif _Place_H_

@@ -17,6 +17,6 @@ public:
 	{
 		/* JEDNO W POLE PRZÓD USTAWI NA ZIELONE/CZERWONE */
 		for (int i = 0; i < 7; i++)
-			board.setPlaceAllow(getX() + i, getY() + i);
+			board.setAllow(getX() + i, getY() + i);
 	}
 };

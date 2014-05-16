@@ -4,13 +4,7 @@
 #include <SDL_image.h>
 #include "Board.h"
 
-enum COLOR_ENUM
-{
-	WHITE = 0,
-	BLACK = 1
-};
-
-enum FIGURE_ENUM
+enum FIGURE_TYPE
 {
 	PAWN = 0,
 	KNIGHT = 1,
@@ -28,13 +22,13 @@ private:
 	SDL_Renderer *renderer;
 	SDL_Texture *texture;
 	SDL_Rect rectangle;
-	COLOR_ENUM color; //ustawiany tylko raz wiêc prywatny
+	COLOR colorFigure; //ustawiany tylko raz wiêc prywatny
 	const int TILE_SIZE = 64; // wielkoœæ pionka w pixelach
 	bool live;
 	int x, y; // pozycja pionka w jednostakch na planszy
 
 protected:
-	FIGURE_ENUM figure; //mo¿e siê zmieniæ
+	FIGURE_TYPE figure; //mo¿e siê zmieniæ
 	Board *boardPtr; //wskaŸnik na planszê
 
 public:
@@ -51,46 +45,44 @@ public:
 	void kill()
 	{
 		live = false;
-		boardPtr->resetAll();
+		boardPtr->setFree(x, y);
+		boardPtr->reset();
 	}
 
-	void set(SDL_Renderer *renderer, int x, int y, COLOR_ENUM color, Board &board)
+	void set(SDL_Renderer *renderer, int x, int y, COLOR colorFigure, Board &board)
 	{
 		this->renderer = renderer;
 		
 		switch (figure) //która textura ma byæ za³adowana
 		{
 		case PAWN:
-			texture = IMG_LoadTexture(renderer, ((color == WHITE) ? "WPawn.png" : "BPawn.png"));
+			texture = IMG_LoadTexture(renderer, ((colorFigure == WHITE) ? "WPawn.png" : "BPawn.png"));
 			break;
 
 		case ROOK:
-			texture = IMG_LoadTexture(renderer, ((color == WHITE) ? "WRook.png" : "BRook.png"));
+			texture = IMG_LoadTexture(renderer, ((colorFigure == WHITE) ? "WRook.png" : "BRook.png"));
 			break;
 			
 		case KING:
-			texture = IMG_LoadTexture(renderer, ((color == WHITE) ? "WKing.png" : "BKing.png"));
+			texture = IMG_LoadTexture(renderer, ((colorFigure == WHITE) ? "WKing.png" : "BKing.png"));
 			break;
 
 		case QUEEN:
-			texture = IMG_LoadTexture(renderer, ((color == WHITE) ? "WQueen.png" : "BQueen.png"));
+			texture = IMG_LoadTexture(renderer, ((colorFigure == WHITE) ? "WQueen.png" : "BQueen.png"));
 			break;
 
 		case BISHOP:
-			texture = IMG_LoadTexture(renderer, ((color == WHITE) ? "WBishop.png" : "BBishop.png"));
+			texture = IMG_LoadTexture(renderer, ((colorFigure == WHITE) ? "WBishop.png" : "BBishop.png"));
 			break;
 			
 		case KNIGHT:
-			texture = IMG_LoadTexture(renderer, ((color == WHITE) ? "WKnight.png" : "BKnight.png"));
+			texture = IMG_LoadTexture(renderer, ((colorFigure == WHITE) ? "WKnight.png" : "BKnight.png"));
 			break;
-
 		}
 
-
 		setPosition(x, y);
-		board.setBusy(x, y, (getColor() == WHITE) ? WHITE_FIGURE : BLACK_FIGURE);
-		
-		this->color = color;
+		board.setBusy(x, y, colorFigure);
+		this->colorFigure = colorFigure;
 		boardPtr = &board;
 
 		rectangle.w = TILE_SIZE;
@@ -103,14 +95,14 @@ public:
 		this->x = x;
 		this->y = y;
 
+		
+
 		/* POZYCJA W PIXELACH - NA EKRANIE */
 		int boardStartX = ((800 - 8 * TILE_SIZE) / 2);
 		int boardStartY = ((600 - 8 * TILE_SIZE) / 2);
 
 		rectangle.x = (x * TILE_SIZE) + boardStartX;
 		rectangle.y = (y * TILE_SIZE) + boardStartY;
-
-		/* INFORMACJA O TYM ¯E POLE JEST ZAJÊTE */
 	}
 
 	void render()
@@ -129,9 +121,14 @@ public:
 		return y;
 	}
 
-	COLOR_ENUM getColor()
+	COLOR getColor()
 	{
-		return color;
+		return colorFigure;
+	}
+
+	FIGURE_TYPE getFigure()
+	{
+		return figure;
 	}
 
 	protected:
