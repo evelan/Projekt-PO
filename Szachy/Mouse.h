@@ -1,4 +1,6 @@
 #include <SDL.h>
+#include "DynamicObject.h"
+#include "Game.h"
 
 /* OBIEKT MYSZKI POZWALA NA ODBIERANIE SYGNA£ÓW */
 
@@ -33,9 +35,14 @@ public:
 		return y;
 	}
 
-	bool overlaps(int figureX, int figureY)
+	bool overlaps(DynamicObject *obj)
 	{
-		return (x == figureX && y == figureY) ? true : false;
+		return (obj->getX() == x && obj->getY() == y) ? true : false;
+	}
+
+	bool overlaps(DynamicObject *obj, int figureX, int figureY)
+	{
+		return (obj->getX() + figureX == x && obj->getY() + figureY == y) ? true : false;
 	}
 
 	bool bPressed()
@@ -43,6 +50,11 @@ public:
 		x = ((e.motion.x - boardStartX) / 64); // zapisanie wspó³rzêdnych podczas klikniecia bo tylko na takich nam zale¿y
 		y = ((e.motion.y - boardStartY) / 64);
 		return (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT);
+	}
+
+	bool kPressed(SDL_Keycode key)
+	{
+		return (e.type == key);
 	}
 
 	void setFocus()

@@ -7,16 +7,60 @@ public:
 	{
 		figure = BISHOP;
 	}
-
-	void move()
+	void move(int x, int y)
 	{
-		//setPosition(getX(), (getColor() == WHITE) ? getY() - 1 : getY() + 1);
+		if (isAlive())
+			setPosition(x, y);
 	}
 
-	void focus(SDL_Renderer *renderer, Board &board)
+	void focus()
 	{
-		/* JEDNO W POLE PRZÓD USTAWI NA ZIELONE/CZERWONE */
-		for (int i = 0; i < 7; i++)
-			board.setAllow(getX() + i, getY() + i);
+		if (isAlive())
+		{
+			int yDelta = getY() - 10;
+			int xDelta = getX() - 10;
+			//int i = 0;
+			/*
+			while (boardPtr->isFree(xDelta + i, yDelta + i))
+			{
+				if (boardPtr->onBoard(xDelta + i, yDelta + i))
+					boardPtr->setAllow(xDelta + i, yDelta + i);
+				i++;
+			}
+			*/
+			/*
+			do
+			{
+				i++;
+				if (boardPtr->onBoard(xDelta + i, yDelta + i))
+					boardPtr->setAllow(xDelta + i, yDelta + i);
+			} while (!boardPtr->isEnemy(xDelta + i, yDelta + i, getColor()));
+			*/
+			
+			for (int i = 0; i < 20; i++) {
+				if (boardPtr->onBoard(xDelta+i, yDelta+i))
+				{
+					if (boardPtr->isFree(xDelta + i, yDelta + i))
+						boardPtr->setAllow(xDelta + i, yDelta + i);
+				}
+			}
+
+			yDelta = getY() - 10;
+			xDelta = getX() + 10;
+			for (int i = 0; i < 20; i++) {
+				if (boardPtr->onBoard(xDelta - i, yDelta + i))
+				{
+					if (boardPtr->isFree(xDelta - i, yDelta + i))
+						boardPtr->setAllow(xDelta - i, yDelta + i);
+				}
+			}
+			
+		}
+	}
+
+private:
+	int nextPlace()
+	{
+		return 0;
 	}
 };

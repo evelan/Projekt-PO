@@ -46,12 +46,12 @@ public:
 	{
 		live = false;
 		boardPtr->setFree(x, y);
-		boardPtr->reset();
 	}
 
 	void set(SDL_Renderer *renderer, int x, int y, COLOR colorFigure, Board &board)
 	{
 		this->renderer = renderer;
+		boardPtr = &board;
 		
 		switch (figure) //która textura ma byæ za³adowana
 		{
@@ -80,22 +80,22 @@ public:
 			break;
 		}
 
-		setPosition(x, y);
+		setPosition(x, y, true);
 		board.setBusy(x, y, colorFigure);
 		this->colorFigure = colorFigure;
-		boardPtr = &board;
 
-		rectangle.w = TILE_SIZE;
-		rectangle.h = TILE_SIZE;
+		//rectangle.w = TILE_SIZE;
+		//rectangle.h = TILE_SIZE;
 	}
 
-	void setPosition(int x, int y)
+	void setPosition(int x, int y, bool firstSetup = false)
 	{
+		if (!firstSetup)
+			boardPtr->setFree(getX(), getY());
+
 		/* POZYCJA NA PLANSZY [0, 7] */
 		this->x = x;
 		this->y = y;
-
-		
 
 		/* POZYCJA W PIXELACH - NA EKRANIE */
 		int boardStartX = ((800 - 8 * TILE_SIZE) / 2);
@@ -103,10 +103,15 @@ public:
 
 		rectangle.x = (x * TILE_SIZE) + boardStartX;
 		rectangle.y = (y * TILE_SIZE) + boardStartY;
+
+		boardPtr->setBusy(x, y, getColor()); // tu pobiera dobrze wartosci z getX i getY potem siê psuje
 	}
 
-	void render()
+	void render(SDL_Renderer *renderer)
 	{
+		rectangle.w = TILE_SIZE;
+		rectangle.h = TILE_SIZE;
+
 		if (live)
 			SDL_RenderCopy(renderer, texture, NULL, &rectangle);
 	}
@@ -130,12 +135,5 @@ public:
 	{
 		return figure;
 	}
-
-	protected:
-		bool safeMove()
-		{
-			return (x - 1 < 0 && x + 1 > 7 && y - 1 < 0 && y + 1 > 7) ? true : false;
-		}
-
 };
 #endif _DynamicObject_H_

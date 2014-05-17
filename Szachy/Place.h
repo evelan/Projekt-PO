@@ -26,16 +26,17 @@ class Place
 {
 private:
 	SDL_Texture *green, *red;
+	SDL_Texture *black, *white;
 	SDL_Texture *texture;
 	SDL_Rect rectangle;
 	STATE state;
 	COLOR color;
-
+	int x, y;
 
 public:
 	static const int TILE_SIZE = 64; //rozmiar jednej "kratki" planszy w pikselach
 	bool allowedPlace; // pole dozwolone dla ruchu
-	bool enemyHere; // pole na którym jest przeciwnik
+	bool attackAllow; // pole na którym jest przeciwnik
 
 	Place()
 	{
@@ -51,31 +52,48 @@ public:
 		texture = IMG_LoadTexture(renderer, file.c_str());
 		green = IMG_LoadTexture(renderer, "ok.png");
 		red = IMG_LoadTexture(renderer, "not_ok.png");
+		black = IMG_LoadTexture(renderer, "black.png");
+		white = IMG_LoadTexture(renderer, "white.png");
 
 		rectangle.x = xPix;
 		rectangle.y = yPix;
 	}
 
-	void render(SDL_Renderer *renderer) // renderuje pole na wedle ustawieñ
+	void render(SDL_Renderer *renderer, bool debug = false) // renderuje pole na wedle ustawieñ
 	{
 		SDL_RenderCopy(renderer, texture, NULL, &rectangle); // czarne/bia³e jest renderowane zawsze
 		
 		if (state == FREE && allowedPlace) //zielona nak³adka jeœli dostêpne dla ruchu i wolne
 			SDL_RenderCopy(renderer, green, NULL, &rectangle);
 
-		if (state == BUSY && enemyHere) //czerwona nak³adka jeœli jest na nim przeciwnik i jest zajête
+		if (state == BUSY && attackAllow) //czerwona nak³adka jeœli jest na nim przeciwnik i jest zajête
 			SDL_RenderCopy(renderer, red, NULL, &rectangle);
+
+
+		if (debug) {
+			if (state == FREE) //zielona nak³adka jeœli dostêpne dla ruchu i wolne
+				SDL_RenderCopy(renderer, green, NULL, &rectangle);
+
+			if (state == BUSY) //czerwona nak³adka jeœli jest na nim przeciwnik i jest zajête
+				SDL_RenderCopy(renderer, red, NULL, &rectangle);
+
+			if (color == WHITE)
+				SDL_RenderCopy(renderer, white, NULL, &rectangle);
+
+			if (color == BLACK)
+				SDL_RenderCopy(renderer, black, NULL, &rectangle);
+		}
 	}
 
 	void reset() // resetuje ustawienie pola
 	{
 		allowedPlace = false;
-		enemyHere = false;
+		attackAllow = false;
 	}
 
 	STATE getState()
 	{
-		return state;
+		return state;	
 	}
 
 	COLOR getColor()

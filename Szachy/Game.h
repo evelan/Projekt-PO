@@ -2,7 +2,9 @@
 #define _Game_H_
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <SDL_image.h>
 #include <string>
+#include "Text.h"
 #include "Mouse.h"
 #include "Board.h"
 #include "Pawn.h"
@@ -33,6 +35,7 @@ private:
 	const int SCREEN_WIDTH = 800;
 	const int SCREEN_HEIGHT = 600;
 
+	ENUM_PLAYER playerColor; // który gracz aktualnie wykonuje ruch
 	SDL_Renderer *renderer;
 	SDL_Window *window;
 	Texture background;
@@ -49,13 +52,9 @@ private:
 	Mouse mouse;
 	Board board;
 
-
-
-	ENUM_PLAYER playerColor; // który gracz aktualnie wykonuje ruch
-
 	int k = 0;
-	int id; // wybrany pionek
-
+	int id = -1; // numer pionka który został podświetlony przez gracza
+	bool debug;
 
 private:
 	void setFiguresDefault()
@@ -113,61 +112,142 @@ private:
 
 	void update()
 	{
+		if (mouse.kPressed(SDL_KEYUP))
+			debug = true;
+		if (mouse.kPressed(SDL_KEYDOWN))
+			debug = false;
+
 		/* RUCH GRACZA */
 		//Gracz wybiera pionek
 		if (mouse.bPressed())
 		{
-			//Sprawdzanie który pionek został wybrany
+
+			/* Sprawdzanie który pionek został wybrany */
 			for (int i = 0; i < 32; i++)
 			{
-				if (mouse.overlaps(object[i]->getX(), object[i]->getY()) && object[i]->getColor() == playerColor)
+
+				if (mouse.overlaps(object[i]) && object[i]->getColor() == playerColor)
 				{
 					mouse.setFocus(); // myszka klikneła na pionek odpowiedniego dla gracza koloru
-					id = i; 
+					id = i; // numer pionka który został podświetlony przez gracza, dzieki temu przeunie sie wybrany przez nas pionek a nie jakiś inny, który spełni podobne warunki
+					board.reset(); // resetuje całą tablicę domyślnych kolorów przed "focusowaniem"
+
+					//cout << "object[" << i << "] " << object[i]->getX() << " " << object[i]->getY() << "fig: " <<  object[i]->getFigure() << endl;
+
+
 					switch (object[i]->getFigure())
 					{
 					case PAWN:
-						pawn[i].focus();
+						pawn[i].focus(); // podświetla jego ścieżkę
 						break;
 
 					case BISHOP:
+						bishop[i - 16].focus();
 						break;
 
 					case ROOK:
+						rook[i - 20].focus();
 						break;
 
 					case KNIGHT:
+						knight[i - 24].focus();
 						break;
 
 					case QUEEN:
+						queen[i - 28].focus();
 						break;
 
 					case KING:
+						king[i - 30].focus();
 						break;
 					}
-					//break; //skoro już znalazło pionka to można przerwać pętlę, bo innego już nie znajdzie (nie powinno przynajmniej)
+					break; // skoro już znalazło pionka to można przerwać pętlę, bo innego już nie znajdzie (nie powinno przynajmniej)
 				}
 			}
 		}
 
+
 		//Gracz porusza pionkiem
 		if (mouse.bPressed() && mouse.isFocused())
 		{
-			for (int i = 0; i < 32; i++)
-			{ 
-				if ((mouse.overlaps(object[i]->getX(), object[i]->getY() + 1) ||
-					mouse.overlaps(object[i]->getX(), object[i]->getY() - 1)) &&
-					object[i]->getColor() == playerColor &&
-					board.isFree(object[i]->getX(), (object[i]->getColor() == WHITE) ? object[i]->getY() - 1 : object[i]->getY() + 1)) 
-				{	// czy myszka najechała na ZIELONE pole i czy ono jest WOLNE
-						pawn[i].move();
+			//PRZEJRZENEIE SZACHOWNICY I WYSZUKANIE CZY ZOSTALO KLIKNIETE POLE WOLNE, PODSWIETLONE
+			if (board.isAllow(mouse.getX(), mouse.getY()))
+			{
+				switch (object[id]->getFigure())
+				{
+				case PAWN:
+					pawn[id].move(mouse.getX(), mouse.getY());
+					break;
+
+				case BISHOP:
+					bishop[id - 16].move(mouse.getX(), mouse.getY());
+					break;
+
+				case ROOK:
+					rook[id - 20].move(mouse.getX(), mouse.getY());
+					break;
+
+				case KNIGHT:
+					knight[id - 24].move(mouse.getX(), mouse.getY());
+					break;
+
+				case QUEEN:
+					queen[id - 28].move(mouse.getX(), mouse.getY());
+					break;
+
+				case KING:
+					king[id - 30].move(mouse.getX(), mouse.getY());
+					break;
+				}
+
+				board.reset();
+				mouse.resetFocus();
+
+				changePlayer(); // zmiana gracza
+			}
+
+			if (board.isAttack(mouse.getX(), mouse.getY()))
+			{
+				//znalezienie wybranego pionka na tej pozycji - PRZESZUKANIE PIONKÓW I PORÓWNANIE WSPÓŁRZĘDNYCH 
+				for (int i = 0; i < 32; i++)
+				{
+					if (object[i]->getX() == mouse.getX() && object[i]->getY() == mouse.getY())
+					{
+						switch (object[i]->getFigure())
+						{
+						case PAWN:
+							pawn[id].attack(object[i]);
+							pawn[id].setPosition(mouse.getX(), mouse.getY());
+							break;
+
+						case BISHOP:
+							//bishop[i - 16].
+							break;
+
+						case ROOK:
+							//rook[i - 20].
+							break;
+
+						case KNIGHT:
+							knight[id - 24].attack(object[i]);
+							knight[id - 24].setPosition(mouse.getX(), mouse.getY());
+							break;
+
+						case QUEEN:
+							//queen[i - 28].
+							break;
+
+						case KING:
+							//king[i - 30].
+							break;
+						}
+
 						board.reset();
 						mouse.resetFocus();
 
-						/* ZAPIS RUCHU DO DYNAMICZNEJ TABLICY */
-
 						changePlayer(); // zmiana gracza
 						break;
+					}
 				}
 			}
 		}
@@ -179,10 +259,10 @@ private:
 		SDL_RenderClear(renderer);
 
 		background.render();
-		board.renderBoard();
+		board.renderBoard(debug);
 
 		for (int i = 0; i < 32; i++)
-			object[i]->render();
+			object[i]->render(renderer);
 
 		SDL_RenderPresent(renderer);
 	}
@@ -197,14 +277,16 @@ public:
 	{
 		/* KONFIGURACJA SDL */
 		SDL_Init(SDL_INIT_EVERYTHING); //załączamy SDLa
+		TTF_Init();
 		window = SDL_CreateWindow("Szachy", WINDOW_POS_X, WINDOW_POS_Y, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN); //tworzy okno
 		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); //renderer
 
 		/* KONFIGURACJA GRY */
 		board.setup(renderer); //ustawiam obiekt szachownicy
 		background.setup(renderer, "background.png", 0, 0, 800, 600); // ustawiam tło
+
 		setFiguresDefault(); // ustawiamy figury na domyślne pozycje
-		playerColor = WHITE_PLAYER;
+		playerColor = BLACK_PLAYER;
 	}
 
 	void main()
@@ -215,7 +297,6 @@ public:
 			render();
 		}
 	}
-
 
 	void close()
 	{
