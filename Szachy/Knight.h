@@ -39,10 +39,4 @@ public:
 			}
 		}
 	}
-
-	void attack(DynamicObject *obj)
-	{
-		if (isAlive())
-			obj->kill();
-	}
 };

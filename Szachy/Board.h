@@ -56,68 +56,68 @@ public:
 	/* USTAWIENIE ZAJÊTOŒCI POLA */
 	void setBusy(int x, int y, COLOR color)
 	{
-		if (onBoard(x, y)){
+		//if (onBoard(x, y)){
 			place[x][y].setState(BUSY);
 			place[x][y].setColor(color);
-		}
+		//}
 	}
 
 	void setFree(int x, int y)
 	{
-		if (onBoard(x, y)){
+		//if (onBoard(x, y)){
 			place[x][y].setState(FREE);
 			place[x][y].setColor(NONE);
-		}
+		//}
 	}
 
 	bool isFree(int x, int y)
 	{
-		if (onBoard(x, y))
+		//if (onBoard(x, y))
 			return (place[x][y].getState() == FREE);
 	}
 
 	bool isBusy(int x, int y)
 	{
-		if (onBoard(x, y))
+		//if (onBoard(x, y))
 			return (place[x][y].getState() == BUSY);
 	}
 
 	/* USTAWIENIE CZY POLE JEST DOSTÊPNE DLA RUCHU */
 	void setAllow(int x, int y)
 	{
-		if (onBoard(x, y))
+		//if (onBoard(x, y))
 			place[x][y].allowedPlace = true;
 	}
 
 	bool isAllow(int x, int y)
 	{
-		if (onBoard(x, y))
+		//if (onBoard(x, y))
 			return place[x][y].allowedPlace;
 	}
 
 	/* USTAWIENIE CZY NA POLU JEST PRZECIWNIK */
 	void setEnemy(int x, int y)
 	{
-		if (onBoard(x, y))
+		//if (onBoard(x, y))
 			place[x][y].attackAllow = true;
 	}
 
 	bool isAttack(int x, int y)
 	{
-		if (onBoard(x, y))
+		//if (onBoard(x, y))
 			return place[x][y].attackAllow;
 	}
 
 	bool isEnemy(int x, int y, COLOR color) //czy dla wybranego obiektu inny pionek bêdzie przeciwnikiem
 	{
-		if (onBoard(x, y)){
+		//if (onBoard(x, y)){
 			if (place[x][y].getColor() == color)
 				return false;
 			else if (place[x][y].getColor() == NONE)
 				return false;
 			else
 				return true;
-		}
+		//}
 	}
 
 	bool onBoard(int x, int y)

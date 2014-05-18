@@ -12,11 +12,9 @@ public:
 		firstMove = true;
 	}
 
-	void move(int x, int y)
+	void moved()
 	{
 		firstMove = false;
-		if (isAlive())
-			setPosition(x, y);
 	}
 
 	void focus()
@@ -33,18 +31,12 @@ public:
 			}
 
 			xDelta = getX() - 1;
-			if (boardPtr->isEnemy(xDelta, yDelta, getColor())) // jeœli pole na lewo na skos jest WROGIEM
+			if (boardPtr->isEnemy(xDelta, yDelta, getColor()) && boardPtr->onBoard(xDelta, yDelta)) // jeœli pole na lewo na skos jest WROGIEM
 				boardPtr->setEnemy(xDelta, yDelta); // to ustaw to pole na CZERWONE
 
 			xDelta = getX() + 1;
-			if (boardPtr->isEnemy(xDelta, yDelta, getColor()))  // jeœli pole na w prawo na skos jest WROGIEM 
+			if (boardPtr->isEnemy(xDelta, yDelta, getColor()) && boardPtr->onBoard(xDelta, yDelta))  // jeœli pole na w prawo na skos jest WROGIEM 
 				boardPtr->setEnemy(xDelta, yDelta); // to ustaw to pole na CZERWONE
 		}
-	}
-
-	void attack(DynamicObject *obj)
-	{
-		firstMove = false;
-		obj->kill();
 	}
 };

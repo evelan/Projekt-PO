@@ -4,6 +4,22 @@
 #include <SDL_image.h>
 #include "Board.h"
 
+
+enum DIRECTION
+{
+	FORWARD = 0,
+	BACKWARD = 1,
+	RIGHT = 2,
+	LEFT = 3,
+
+	FOR_RIGHT = 4,
+	FOR_LEFT = 5,
+
+	BACK_RIGHT = 6,
+	BACK_LEFT = 7
+
+};
+
 enum FIGURE_TYPE
 {
 	PAWN = 0,

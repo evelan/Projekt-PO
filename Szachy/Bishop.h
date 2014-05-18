@@ -2,65 +2,75 @@
 
 class Bishop : public DynamicObject
 {
+private:
+	DIRECTION dir;
+
 public:
 	Bishop()
 	{
 		figure = BISHOP;
-	}
-	void move(int x, int y)
-	{
-		if (isAlive())
-			setPosition(x, y);
 	}
 
 	void focus()
 	{
 		if (isAlive())
 		{
-			int yDelta = getY() - 10;
-			int xDelta = getX() - 10;
-			//int i = 0;
-			/*
-			while (boardPtr->isFree(xDelta + i, yDelta + i))
-			{
-				if (boardPtr->onBoard(xDelta + i, yDelta + i))
-					boardPtr->setAllow(xDelta + i, yDelta + i);
-				i++;
-			}
-			*/
-			/*
-			do
-			{
-				i++;
-				if (boardPtr->onBoard(xDelta + i, yDelta + i))
-					boardPtr->setAllow(xDelta + i, yDelta + i);
-			} while (!boardPtr->isEnemy(xDelta + i, yDelta + i, getColor()));
-			*/
-			
-			for (int i = 0; i < 20; i++) {
-				if (boardPtr->onBoard(xDelta+i, yDelta+i))
-				{
-					if (boardPtr->isFree(xDelta + i, yDelta + i))
-						boardPtr->setAllow(xDelta + i, yDelta + i);
-				}
-			}
+			// sprawdzanie do przodu w prawo
+			int xDelta = getX() + 1;
+			int yDelta = (getColor() == WHITE) ? (getY() - 1) : (getY() + 1);
+			check(xDelta, yDelta, FOR_RIGHT);
 
-			yDelta = getY() - 10;
-			xDelta = getX() + 10;
-			for (int i = 0; i < 20; i++) {
-				if (boardPtr->onBoard(xDelta - i, yDelta + i))
-				{
-					if (boardPtr->isFree(xDelta - i, yDelta + i))
-						boardPtr->setAllow(xDelta - i, yDelta + i);
-				}
-			}
-			
+			// ty³ prawo
+			xDelta = getX() + 1;
+			yDelta = (getColor() == WHITE) ? (getY() + 1) : (getY() - 1);
+			check(xDelta, yDelta, BACK_RIGHT);
+
+			// przód w lewo
+			xDelta = getX() - 1;
+			yDelta = (getColor() == WHITE) ? (getY() - 1) : (getY() + 1);
+			check(xDelta, yDelta, FOR_LEFT);
+
+			// ty³ w lewo 
+			xDelta = getX() - 1;
+			yDelta = (getColor() == WHITE) ? (getY() + 1) : (getY() - 1);
+			check(xDelta, yDelta, BACK_LEFT);
 		}
 	}
 
 private:
-	int nextPlace()
+	void check(int xDelta, int yDelta, DIRECTION dir)
 	{
-		return 0;
+		while (boardPtr->onBoard(xDelta, yDelta) && (boardPtr->isFree(xDelta, yDelta) || boardPtr->isEnemy(xDelta, yDelta, getColor())))
+		{
+			if (boardPtr->isFree(xDelta, yDelta))
+				boardPtr->setAllow(xDelta, yDelta);
+			else if (boardPtr->isEnemy(xDelta, yDelta, getColor())){
+				boardPtr->setEnemy(xDelta, yDelta);
+				break;
+			}
+			switch (dir)
+			{
+			case FOR_RIGHT:
+				(getColor() == WHITE) ? yDelta-- : yDelta++;
+				xDelta++;
+				break;
+
+			case BACK_RIGHT:
+				(getColor() == WHITE) ? yDelta++ : yDelta--;
+				xDelta++;
+				break;
+
+			case FOR_LEFT:
+				(getColor() == WHITE) ? yDelta-- : yDelta++;
+				xDelta--;
+				break;
+
+			case BACK_LEFT:
+				(getColor() == WHITE) ? yDelta++ : yDelta--;
+				xDelta--;
+				break;
+			}
+
+		}
 	}
 };
