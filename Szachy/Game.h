@@ -57,7 +57,7 @@ private:
 	bool debug;
 
 private:
-	void setFiguresDefault()
+	void setFiguresDefault() // ustawia pionki na domyślne pozycje
 	{
 		/* BIAŁE NA DOLE */
 		for (int i = 0; i < 8; i++)
@@ -110,6 +110,21 @@ private:
 		}
 	}
 
+	void changePlayer()
+	{
+		playerColor = (playerColor == WHITE_PLAYER) ? BLACK_PLAYER : WHITE_PLAYER; // jeśli aktualnie jest biały to ustaw na czarnego, jesli czarny to na białego
+	}
+
+	void save() // zapisuje ruch pionka
+	{
+
+	}
+
+	void open() //odtwarza ruch pionków
+	{
+		SDL_Delay(500);
+	}
+
 	void update()
 	{
 		if (mouse.kPressed(SDL_KEYUP))
@@ -118,94 +133,67 @@ private:
 			debug = false;
 
 		/* RUCH GRACZA */
-		//Gracz wybiera pionek
+		// 1. Gracz wybiera pionek
 		if (mouse.bPressed())
 		{
-
 			/* Sprawdzanie który pionek został wybrany */
 			for (int i = 0; i < 32; i++)
 			{
-
-				if (mouse.overlaps(object[i]) && object[i]->getColor() == playerColor)
+				//IF (myszka nachodzi na dany pionek, aktualny gracz wybiera pionek swojego koloru, pionek jest "żywy")
+				if (mouse.overlaps(object[i]) && object[i]->getColor() == playerColor && object[i]->isAlive())
 				{
-					mouse.setFocus(); // myszka klikneła na pionek odpowiedniego dla gracza koloru
+					mouse.setFocus(); // informacja że myszka klikneła na pionek odpowiedniego koloru (tj. zaznaczyła go) 
 					id = i; // numer pionka który został podświetlony przez gracza, dzieki temu przeunie sie wybrany przez nas pionek a nie jakiś inny, który spełni podobne warunki
-					board.reset(); // resetuje całą tablicę domyślnych kolorów przed "focusowaniem"
+					board.reset(); // resetuje całą tablicę domyślnych kolorów przed podświetlaniem ścieżki
 
-					//cout << "object[" << i << "] " << object[i]->getX() << " " << object[i]->getY() << "fig: " <<  object[i]->getFigure() << endl;
-
-
-					switch (object[i]->getFigure())
+					switch (object[i]->getFigure()) // sprawdzmy który pionek został klinięty aby podświetlić ściezkę dla danego typu pionka
 					{
 					case PAWN:
 						pawn[i].focus(); // podświetla jego ścieżkę
 						break;
 
 					case BISHOP:
-						bishop[i - 16].focus();
+						bishop[BISHOP + i].focus();
 						break;
 
 					case ROOK:
-						rook[i - 20].focus();
+						rook[ROOK + i].focus();
 						break;
 
 					case KNIGHT:
-						knight[i - 24].focus();
+						knight[KNIGHT + i].focus();
 						break;
 
 					case QUEEN:
-						queen[i - 28].focus();
+						queen[QUEEN + i].focus();
 						break;
 
 					case KING:
-						king[i - 30].focus();
+						king[KING + i].focus();
 						break;
 					}
-					break; // skoro już znalazło pionka to można przerwać pętlę, bo innego już nie znajdzie (nie powinno przynajmniej)
+					break; // skoro już znalazło pionka to można przerwać pętlę, bo innego już nie znajdzie
 				}
 			}
 		}
 
-
-		//Gracz porusza pionkiem
-		if (mouse.bPressed() && mouse.isFocused())
+		// 2. Gracz porusza pionkiem
+		if (mouse.bPressed() && mouse.isFocused()) // przycisk wciśnięty po wcześniejszym zaznaczeniu pionka
 		{
-			//PRZEJRZENEIE SZACHOWNICY I WYSZUKANIE CZY ZOSTALO KLIKNIETE POLE WOLNE, PODSWIETLONE
-			if (board.isAllow(mouse.getX(), mouse.getY()))
+			// Gracz przesuwa swój pionek
+			if (board.isAllow(mouse.getX(), mouse.getY())) //sprawdzenie czy miejsce kliknięte jest dozwolone dla ruchu
 			{
-				switch (object[id]->getFigure())
-				{
-				case PAWN:
+				if (object[id]->getFigure() == PAWN)
 					pawn[id].move(mouse.getX(), mouse.getY());
-					break;
+				else
+					object[id]->setPosition(mouse.getX(), mouse.getY()); // ustawiamy tam pionka
 
-				case BISHOP:
-					bishop[id - 16].move(mouse.getX(), mouse.getY());
-					break;
-
-				case ROOK:
-					rook[id - 20].move(mouse.getX(), mouse.getY());
-					break;
-
-				case KNIGHT:
-					knight[id - 24].move(mouse.getX(), mouse.getY());
-					break;
-
-				case QUEEN:
-					queen[id - 28].move(mouse.getX(), mouse.getY());
-					break;
-
-				case KING:
-					king[id - 30].move(mouse.getX(), mouse.getY());
-					break;
-				}
-
-				board.reset();
-				mouse.resetFocus();
-
+				board.reset(); // resetujemy tablicę aby zlikwidować niepotrzebne już podświetleenia na planszy
+				mouse.resetFocus(); // resetujemy zaznaczenie bo będzie odywać się ruch drugiego gracza
 				changePlayer(); // zmiana gracza
 			}
 
+			// Gracz atakuje 
 			if (board.isAttack(mouse.getX(), mouse.getY()))
 			{
 				//znalezienie wybranego pionka na tej pozycji - PRZESZUKANIE PIONKÓW I PORÓWNANIE WSPÓŁRZĘDNYCH 
@@ -213,45 +201,52 @@ private:
 				{
 					if (object[i]->getX() == mouse.getX() && object[i]->getY() == mouse.getY())
 					{
-						switch (object[i]->getFigure())
-						{
-						case PAWN:
-							pawn[id].attack(object[i]);
-							pawn[id].setPosition(mouse.getX(), mouse.getY());
-							break;
+						object[i]->kill();
 
-						case BISHOP:
-							//bishop[i - 16].
-							break;
+						if (object[id]->getFigure() == PAWN)
+							pawn[id].move(mouse.getX(), mouse.getY());
+						else
+							object[id]->setPosition(mouse.getX(), mouse.getY());
 
-						case ROOK:
-							//rook[i - 20].
-							break;
-
-						case KNIGHT:
-							knight[id - 24].attack(object[i]);
-							knight[id - 24].setPosition(mouse.getX(), mouse.getY());
-							break;
-
-						case QUEEN:
-							//queen[i - 28].
-							break;
-
-						case KING:
-							//king[i - 30].
-							break;
-						}
-
-						board.reset();
+						board.reset(); // resetujemy tablicę aby zlikwidować niepotrzebne już podświetleenia na planszy
 						mouse.resetFocus();
 
 						changePlayer(); // zmiana gracza
 						break;
+						/*
+						switch (object[i]->getFigure())
+						{
+						case PAWN:
+						pawn[id].attack(object[i]);
+						pawn[id].setPosition(mouse.getX(), mouse.getY());
+						break;
+
+						case BISHOP:
+						//bishop[i - 16].
+						break;
+
+						case ROOK:
+						//rook[i - 20].
+						break;
+
+						case KNIGHT:
+						knight[id - 24].attack(object[i]);
+						knight[id - 24].setPosition(mouse.getX(), mouse.getY());
+						break;
+
+						case QUEEN:
+						//queen[i - 28].
+						break;
+
+						case KING:
+						//king[i - 30].
+						break;
+						}
+						*/
 					}
 				}
 			}
 		}
-
 	}
 
 	void render()
@@ -259,17 +254,12 @@ private:
 		SDL_RenderClear(renderer);
 
 		background.render();
-		board.renderBoard(debug);
+		board.render(debug);
 
 		for (int i = 0; i < 32; i++)
-			object[i]->render(renderer);
+			object[i]->render();
 
 		SDL_RenderPresent(renderer);
-	}
-
-	void changePlayer()
-	{
-		playerColor = (playerColor == WHITE_PLAYER) ? BLACK_PLAYER : WHITE_PLAYER; // jeśli aktualnie jest biały to ustaw na czarnego, jesli czarny to na białego
 	}
 
 public:
@@ -286,7 +276,7 @@ public:
 		background.setup(renderer, "background.png", 0, 0, 800, 600); // ustawiam tło
 
 		setFiguresDefault(); // ustawiamy figury na domyślne pozycje
-		playerColor = BLACK_PLAYER;
+		playerColor = WHITE_PLAYER;
 	}
 
 	void main()
@@ -297,6 +287,8 @@ public:
 			render();
 		}
 	}
+
+	void end();
 
 	void close()
 	{

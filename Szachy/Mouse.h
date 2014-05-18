@@ -7,23 +7,18 @@
 class Mouse
 {
 private:
-
-	int x;
-	int y;
-	SDL_Event e;
-
-	bool focus;
-
 	int boardStartX = ((800 - 8 * 64) / 2); //gdzie zaczyna siê plansza do gry
 	int boardStartY = ((600 - 8 * 64) / 2);
+	SDL_Event e;
+	bool focus;
+	int x;
+	int y;
 
 public:
 	Mouse()
 	{
 		focus = false;
 	}
-
-	~Mouse(){}
 
 	int getX()
 	{
@@ -37,19 +32,19 @@ public:
 
 	bool overlaps(DynamicObject *obj)
 	{
-		return (obj->getX() == x && obj->getY() == y) ? true : false;
-	}
-
-	bool overlaps(DynamicObject *obj, int figureX, int figureY)
-	{
-		return (obj->getX() + figureX == x && obj->getY() + figureY == y) ? true : false;
+		return (obj->getX() == x && obj->getY() == y);
 	}
 
 	bool bPressed()
 	{
-		x = ((e.motion.x - boardStartX) / 64); // zapisanie wspó³rzêdnych podczas klikniecia bo tylko na takich nam zale¿y
-		y = ((e.motion.y - boardStartY) / 64);
-		return (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT);
+		if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
+		{
+			x = ((e.motion.x - boardStartX) / 64); // zapisanie wspó³rzêdnych podczas klikniecia bo tylko na takich nam zale¿y
+			y = ((e.motion.y - boardStartY) / 64);
+			return true;
+		}
+		else
+			return false;
 	}
 
 	bool kPressed(SDL_Keycode key)

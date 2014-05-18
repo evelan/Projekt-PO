@@ -16,10 +16,28 @@ public:
 
 	void focus()
 	{
+		int yDelta = getY() - 1;
+		int xDelta = getX();
 		if (isAlive())
 		{
-			if (boardPtr->isFree(getX(), getY() - 3)) // jeœli pole przed nim jest WOLNE
-				boardPtr->setAllow(getX(), getY() - 3); // to ustaw pole przed nim na ZIELONE
+			for (int i = 0; i < 8; i++){
+				if (boardPtr->onBoard(xDelta, yDelta))
+				{
+					if (boardPtr->isFree(xDelta, yDelta)) {
+						boardPtr->setAllow(xDelta, yDelta);
+					}
+					else if (boardPtr->isEnemy(xDelta, yDelta, getColor())){
+						boardPtr->setEnemy(xDelta, yDelta);
+					}
+				}
+				if (i == 0)	{ xDelta++; }
+				if (i == 1) { yDelta++; }
+				if (i == 2) { yDelta++; }
+				if (i == 3) { xDelta--; }
+				if (i == 4)	{ xDelta--; }
+				if (i == 5) { yDelta--; }
+				if (i == 6)	{ yDelta--; }
+			}
 		}
 	}
 };

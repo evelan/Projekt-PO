@@ -7,23 +7,25 @@
 enum FIGURE_TYPE
 {
 	PAWN = 0,
-	KNIGHT = 1,
-	BISHOP = 2,
-	ROOK = 3,
-	QUEEN = 4,
-	KING = 5
+	BISHOP = 16,
+	ROOK = 20,
+	KNIGHT = 24,
+	QUEEN = 28,
+	KING = 30
 };
 
 /* KLASA BAZOWA PIONKÓW */
 
-class DynamicObject 
+class DynamicObject
 {
 private:
+	const int TILE_SIZE = 64; // wielkoœæ pionka w pixelach
+	int boardStartX = ((800 - 8 * TILE_SIZE) / 2);
+	int boardStartY = ((600 - 8 * TILE_SIZE) / 2);
 	SDL_Renderer *renderer;
 	SDL_Texture *texture;
 	SDL_Rect rectangle;
 	COLOR colorFigure; //ustawiany tylko raz wiêc prywatny
-	const int TILE_SIZE = 64; // wielkoœæ pionka w pixelach
 	bool live;
 	int x, y; // pozycja pionka w jednostakch na planszy
 
@@ -34,25 +36,16 @@ protected:
 public:
 	DynamicObject()
 	{
-		live = true;
+		live = true; // ka¿dy tworzony pionek "¿yje"
+		rectangle.w = TILE_SIZE;
+		rectangle.h = TILE_SIZE;
 	};
-
-	bool isAlive()
-	{
-		return live;
-	}
-
-	void kill()
-	{
-		live = false;
-		boardPtr->setFree(x, y);
-	}
 
 	void set(SDL_Renderer *renderer, int x, int y, COLOR colorFigure, Board &board)
 	{
 		this->renderer = renderer;
 		boardPtr = &board;
-		
+
 		switch (figure) //która textura ma byæ za³adowana
 		{
 		case PAWN:
@@ -62,7 +55,7 @@ public:
 		case ROOK:
 			texture = IMG_LoadTexture(renderer, ((colorFigure == WHITE) ? "WRook.png" : "BRook.png"));
 			break;
-			
+
 		case KING:
 			texture = IMG_LoadTexture(renderer, ((colorFigure == WHITE) ? "WKing.png" : "BKing.png"));
 			break;
@@ -74,44 +67,59 @@ public:
 		case BISHOP:
 			texture = IMG_LoadTexture(renderer, ((colorFigure == WHITE) ? "WBishop.png" : "BBishop.png"));
 			break;
-			
+
 		case KNIGHT:
 			texture = IMG_LoadTexture(renderer, ((colorFigure == WHITE) ? "WKnight.png" : "BKnight.png"));
 			break;
 		}
 
-		setPosition(x, y, true);
-		board.setBusy(x, y, colorFigure);
-		this->colorFigure = colorFigure;
-
-		//rectangle.w = TILE_SIZE;
-		//rectangle.h = TILE_SIZE;
-	}
-
-	void setPosition(int x, int y, bool firstSetup = false)
-	{
-		if (!firstSetup)
-			boardPtr->setFree(getX(), getY());
-
-		/* POZYCJA NA PLANSZY [0, 7] */
 		this->x = x;
 		this->y = y;
-
-		/* POZYCJA W PIXELACH - NA EKRANIE */
-		int boardStartX = ((800 - 8 * TILE_SIZE) / 2);
-		int boardStartY = ((600 - 8 * TILE_SIZE) / 2);
 
 		rectangle.x = (x * TILE_SIZE) + boardStartX;
 		rectangle.y = (y * TILE_SIZE) + boardStartY;
 
-		boardPtr->setBusy(x, y, getColor()); // tu pobiera dobrze wartosci z getX i getY potem siê psuje
+		this->colorFigure = colorFigure;
+
+		boardPtr->setBusy(getX(), getY(), getColor());
 	}
 
-	void render(SDL_Renderer *renderer)
+	bool isAlive()
 	{
-		rectangle.w = TILE_SIZE;
-		rectangle.h = TILE_SIZE;
+		return live;
+	}
 
+	void kill()
+	{
+		live = false;
+		boardPtr->setFree(x, y); // pole zostaje zwolnione 
+	}
+
+	void attack(DynamicObject *obj)
+	{
+		setPosition(obj->getX(), obj->getY()); // zmienia pozycjê na pozycjê pionka którego atakuje
+		obj->kill(); // pionek który zostaje zaatakowany ginie
+	}
+
+	void setPosition(int x, int y)
+	{
+		//ustawia obecn¹ pozcyjê jako woln¹ 
+		boardPtr->setFree(getX(), getY());
+
+		// zmienia wspó³rzêdne pionka
+		this->x = x;
+		this->y = y;
+
+		//zmienia miejsce renderowania pionka
+		rectangle.x = (x * TILE_SIZE) + boardStartX;
+		rectangle.y = (y * TILE_SIZE) + boardStartY;
+
+		//ustawia obecne miejsce jako zajête
+		boardPtr->setBusy(x, y, colorFigure);
+	}
+
+	void render()
+	{
 		if (live)
 			SDL_RenderCopy(renderer, texture, NULL, &rectangle);
 	}
