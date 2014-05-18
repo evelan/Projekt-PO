@@ -19,7 +19,6 @@
 
 //tablica dynamicznee 
 //przeciazenia operatorów
-//polimorfizm
 
 enum ENUM_PLAYER
 {
@@ -34,11 +33,13 @@ private:
 	const int WINDOW_POS_Y = 100;
 	const int SCREEN_WIDTH = 800;
 	const int SCREEN_HEIGHT = 600;
+	int boardStartX = ((SCREEN_WIDTH - 8 * Place::TILE_SIZE) / 2); //gdzie zaczyna się plansza do gry
+	int boardStartY = ((SCREEN_HEIGHT - 8 * Place::TILE_SIZE) / 2);
 
 	ENUM_PLAYER playerColor; // który gracz aktualnie wykonuje ruch
 	SDL_Renderer *renderer;
 	SDL_Window *window;
-	Texture background;
+	Texture background, border, winnerScreen;
 
 	DynamicObject *object[32]; // tablica ze wszystkimi figurami i ich podstawowymi funkcjami z DynamicObject
 
@@ -127,11 +128,6 @@ private:
 
 	void update()
 	{
-		if (mouse.kPressed(SDL_KEYUP))
-			debug = true;
-		if (mouse.kPressed(SDL_KEYDOWN))
-			debug = false;
-
 		/* RUCH GRACZA */
 		// 1. Gracz wybiera pionek
 		if (mouse.bPressed())
@@ -213,36 +209,6 @@ private:
 
 						changePlayer(); // zmiana gracza
 						break;
-						/*
-						switch (object[i]->getFigure())
-						{
-						case PAWN:
-						pawn[id].attack(object[i]);
-						pawn[id].setPosition(mouse.getX(), mouse.getY());
-						break;
-
-						case BISHOP:
-						//bishop[i - 16].
-						break;
-
-						case ROOK:
-						//rook[i - 20].
-						break;
-
-						case KNIGHT:
-						knight[id - 24].attack(object[i]);
-						knight[id - 24].setPosition(mouse.getX(), mouse.getY());
-						break;
-
-						case QUEEN:
-						//queen[i - 28].
-						break;
-
-						case KING:
-						//king[i - 30].
-						break;
-						}
-						*/
 					}
 				}
 			}
@@ -254,10 +220,14 @@ private:
 		SDL_RenderClear(renderer);
 
 		background.render();
-		board.renderBoard(debug);
+		border.render();
+		board.render(debug);
 
 		for (int i = 0; i < 32; i++)
 			object[i]->render(renderer);
+
+		if (endGame())
+			winnerScreen.render();
 
 		SDL_RenderPresent(renderer);
 	}
@@ -269,17 +239,19 @@ public:
 		SDL_Init(SDL_INIT_EVERYTHING); //załączamy SDLa
 		TTF_Init();
 		window = SDL_CreateWindow("Szachy", WINDOW_POS_X, WINDOW_POS_Y, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN); //tworzy okno
-		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); //renderer
+		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC); //renderer i Vsync
 
 		/* KONFIGURACJA GRY */
 		board.setup(renderer); //ustawiam obiekt szachownicy
 		background.setup(renderer, "background.png", 0, 0, 800, 600); // ustawiam tło
+		border.setup(renderer, "ramka.png", boardStartX - 4, boardStartY - 4, 520, 520);
+		winnerScreen.setup(renderer, "black_win.png", 0, 0, 800, 600);
 
 		setFiguresDefault(); // ustawiamy figury na domyślne pozycje
 		playerColor = WHITE_PLAYER;
 	}
 
-	void main()
+	void mainLoop()
 	{
 		while (mouse.quit())
 		{
@@ -288,7 +260,21 @@ public:
 		}
 	}
 
-	void end();
+	bool endGame()
+	{
+		if (!king[0].isAlive()) // czarny król
+		{
+			winnerScreen.setup(renderer, "white_win.png", 0, 0, 800, 600);
+			return true;
+		}
+		else if (!king[1].isAlive()) // biały król
+		{
+			winnerScreen.setup(renderer, "black_win.png", 0, 0, 800, 600);
+			return true;
+		}
+		else
+			return false;
+	}
 
 	void close()
 	{
