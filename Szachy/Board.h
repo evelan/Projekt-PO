@@ -39,7 +39,7 @@ public:
 		}
 	}
 
-	void render(bool debug = false) // renderowanie szachownicy
+	void renderBoard(bool debug = false) // renderowanie szachownicy
 	{
 		for (int i = 0; i < 8; i++)
 		for (int j = 0; j < 8; j++)
@@ -56,56 +56,68 @@ public:
 	/* USTAWIENIE ZAJÊTOŒCI POLA */
 	void setBusy(int x, int y, COLOR color)
 	{
-		place[x][y].setState(BUSY);
-		place[x][y].setColor(color);
+		if (onBoard(x, y)){
+			place[x][y].setState(BUSY);
+			place[x][y].setColor(color);
+		}
 	}
 
 	void setFree(int x, int y)
 	{
-		place[x][y].setState(FREE);
-		place[x][y].setColor(NONE);
+		if (onBoard(x, y)){
+			place[x][y].setState(FREE);
+			place[x][y].setColor(NONE);
+		}
 	}
 
 	bool isFree(int x, int y)
 	{
-		return (place[x][y].getState() == FREE);
+		if (onBoard(x, y))
+			return (place[x][y].getState() == FREE);
 	}
 
 	bool isBusy(int x, int y)
 	{
-		return (place[x][y].getState() == BUSY);
+		if (onBoard(x, y))
+			return (place[x][y].getState() == BUSY);
 	}
 
 	/* USTAWIENIE CZY POLE JEST DOSTÊPNE DLA RUCHU */
 	void setAllow(int x, int y)
 	{
-		place[x][y].allowedPlace = true;
+		if (onBoard(x, y))
+			place[x][y].allowedPlace = true;
 	}
 
 	bool isAllow(int x, int y)
 	{
-		return place[x][y].allowedPlace;
+		if (onBoard(x, y))
+			return place[x][y].allowedPlace;
 	}
 
 	/* USTAWIENIE CZY NA POLU JEST PRZECIWNIK */
 	void setEnemy(int x, int y)
 	{
-		place[x][y].attackAllow = true;
+		if (onBoard(x, y))
+			place[x][y].attackAllow = true;
 	}
 
 	bool isAttack(int x, int y)
 	{
-		return place[x][y].attackAllow;
+		if (onBoard(x, y))
+			return place[x][y].attackAllow;
 	}
 
 	bool isEnemy(int x, int y, COLOR color) //czy dla wybranego obiektu inny pionek bêdzie przeciwnikiem
 	{
-		if (place[x][y].getColor() == color)
-			return false;
-		else if (place[x][y].getColor() == NONE)
-			return false;
-		else
-			return true;
+		if (onBoard(x, y)){
+			if (place[x][y].getColor() == color)
+				return false;
+			else if (place[x][y].getColor() == NONE)
+				return false;
+			else
+				return true;
+		}
 	}
 
 	bool onBoard(int x, int y)

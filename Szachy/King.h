@@ -16,10 +16,10 @@ public:
 
 	void focus()
 	{
-		int yDelta = getY() - 1;
-		int xDelta = getX();
 		if (isAlive())
 		{
+		int xDelta = getX();
+		int yDelta = getY() - 1;
 			for (int i = 0; i < 8; i++){
 				if (boardPtr->onBoard(xDelta, yDelta))
 				{

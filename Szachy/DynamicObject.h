@@ -34,18 +34,13 @@ protected:
 	Board *boardPtr; //wskaŸnik na planszê
 
 public:
-	DynamicObject()
-	{
-		live = true; // ka¿dy tworzony pionek "¿yje"
-		rectangle.w = TILE_SIZE;
-		rectangle.h = TILE_SIZE;
-	};
+	DynamicObject(){}
 
 	void set(SDL_Renderer *renderer, int x, int y, COLOR colorFigure, Board &board)
 	{
 		this->renderer = renderer;
 		boardPtr = &board;
-
+		live = true; // ka¿dy tworzony pionek "¿yje"
 		switch (figure) //która textura ma byæ za³adowana
 		{
 		case PAWN:
@@ -118,8 +113,10 @@ public:
 		boardPtr->setBusy(x, y, colorFigure);
 	}
 
-	void render()
+	void render(SDL_Renderer *renderer)
 	{
+		rectangle.w = TILE_SIZE;
+		rectangle.h = TILE_SIZE;
 		if (live)
 			SDL_RenderCopy(renderer, texture, NULL, &rectangle);
 	}

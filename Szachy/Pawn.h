@@ -21,10 +21,10 @@ public:
 
 	void focus()
 	{
-		int xDelta = getX();
-		int yDelta = (getColor() == WHITE) ? (getY() - 1) : (getY() + 1);
 		if (isAlive())
 		{
+			int xDelta = getX();
+			int yDelta = (getColor() == WHITE) ? (getY() - 1) : (getY() + 1);
 			if (boardPtr->isFree(xDelta, yDelta) && boardPtr->onBoard(xDelta, yDelta)) // jeœli pole przed nim jest WOLNE i znajduje sie na szachownicy
 			{
 				boardPtr->setAllow(xDelta, yDelta); // to ustaw pole przed nim na ZIELONE
